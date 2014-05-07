@@ -1,9 +1,10 @@
-sbtTemplate
-===========
+spray-template
+==============
 
+spray 工程模板，参考https://github.com/spray/spray-template/tree/on_spray-can_1.3
+配置了单元测试scaltest,日志引擎logback,eclipse项目生成等插件
 
-scala sbt工程模板，配置了单元测试scaltest,日志引擎logback,eclipse项目生成等插件
-
+* 进入sbt交互终端运行run,打开localhost:8080可看到html页面
 * 运行sbt test会编译并运行自动化单元测试
 * 运行sbt it:test运行src/it/scala下的集成测试
 * 运行sbt it:test运行src/ft/scala下的功能测试
