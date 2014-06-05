@@ -3,7 +3,7 @@ import JacocoPlugin._
 import sbt._
 
 // set the name of the project
-name := "sbtTemplate"
+name := "sprayTemplate"
 
 version := "0.0.1"
 
