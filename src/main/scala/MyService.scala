@@ -1,4 +1,9 @@
 import akka.actor.Actor
+import org.json4s.{DefaultFormats, Formats}
+import org.json4s.JsonAST.JObject
+import sample.Transfer
+import sample.Transfer.TransferRequest
+import spray.httpx.Json4sSupport
 import spray.routing._
 import spray.http._
 import MediaTypes._
@@ -19,20 +24,37 @@ class MyServiceActor extends Actor with MyService {
 
 
 // this trait defines our service behavior independently from the service actor
-trait MyService extends HttpService {
+trait MyService extends HttpService with Json4sSupport {
+  implicit def json4sFormats: Formats = DefaultFormats
 
   val myRoute =
     path("") {
       get {
-        respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+        respondWithMediaType(`text/html`) {
+          // XML is marshalled to `text/xml` by default, so we simply override here
           complete {
             <html>
               <body>
-                <h1>Say hello to <i>spray-routing</i> on <i>spray-can</i>!</h1>
+                <h1>Say hello to
+                  <i>spray-routing</i>
+                  on
+                  <i>spray-can</i>
+                  !</h1>
               </body>
             </html>
           }
         }
       }
-    }
+    } ~
+      path("account" / "transaction") {
+        post {
+          entity(as[TransferRequest]) { transferReq =>
+            detach() {
+              complete {
+                Transfer.transfer(transferReq)
+              }
+            }
+          }
+        }
+      }
 }

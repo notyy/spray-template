@@ -2,10 +2,10 @@ package sample
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class Account(val owner: String, var balance: Double)
+case class Account(owner: String, var balance: Double)
 
 object Account {
-  val logger = LoggerFactory.getLogger(Account.getClass())
+  val logger = LoggerFactory.getLogger(Account.getClass)
   def transfer(from: Account, to: Account, amount: Double) = {
     logger.info(s"tranfering from ${from.owner} to=${to.owner}") //TODO: more than two argument needs java array
     from.balance -= amount
