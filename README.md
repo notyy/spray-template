@@ -11,7 +11,6 @@ http://127.0.0.1:8080/account/transactiona 发送一个post请求，内容为{"i
 * 运行sbt it:test运行src/ft/scala下的功能测试
 * 自动化测试生成的报告文件可在target/html-(test|it|ft)-report下打开index.html查看
 
-* 注意，idea13支持直接导入sbt项目（用idea打开build.sbt文件），因此去掉了sbt-idea插件
 * 注意，idea默认不认识新加入的src/it和src/ft目录，需要手动将其中的子目录设置为测试代码路径
 
 release note
