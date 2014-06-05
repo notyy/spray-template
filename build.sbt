@@ -20,16 +20,17 @@ libraryDependencies ++= {
   val akkaV = "2.3.0"
   val sprayV = "1.3.1"
   Seq(
-  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test,it,ft",
-  "org.pegdown"    % "pegdown" % "1.0.2" % "test,it,ft", //used in html report
-  "org.scalatest"  % "scalatest_2.10" % "2.1.0" % "test,it,ft",
-  "org.slf4j"      % "slf4j-api" % "1.7.7",
-  "ch.qos.logback" % "logback-classic" % "1.1.2",
-  "io.spray" % "spray-can" % sprayV,
-  "io.spray" % "spray-routing" % sprayV,
-  "io.spray" % "spray-testkit" % sprayV % "test",
-  "com.typesafe.akka" %% "akka-actor" % akkaV,
-  "com.typesafe.akka" %% "akka-testkit" % akkaV % "test"
+    "org.scalacheck" %% "scalacheck" % "1.11.3" % "test,it,ft",
+    "org.pegdown" % "pegdown" % "1.0.2" % "test,it,ft", //used in html report
+    "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test,it,ft",
+    "org.slf4j" % "slf4j-api" % "1.7.7",
+    "ch.qos.logback" % "logback-classic" % "1.1.2",
+    "io.spray" % "spray-can" % sprayV,
+    "io.spray" % "spray-routing" % sprayV,
+    "io.spray" % "spray-testkit" % sprayV % "test",
+    "com.typesafe.akka" %% "akka-actor" % akkaV,
+    "com.typesafe.akka" %% "akka-testkit" % akkaV % "test",
+    "org.json4s" %% "json4s-native" % "3.2.4"
   )
 }
 
