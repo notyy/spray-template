@@ -15,6 +15,9 @@ spray 工程模板，参考https://github.com/spray/spray-template/tree/on_spray
 
 release note
 ----------------------
+
+2014.06.05 增加了比较真实的TransferService，接受TransferRequest json，返回TransferResult json
+
 2014.05.03 将集成测试和功能测试分别放在src/it/scala和src/ft/scala下，现在用户可以执行sbt ft:test和sbt it:test运行不同的测试，
 sbt test仍然运行默认的src/test/scala下的单元测试。
 
