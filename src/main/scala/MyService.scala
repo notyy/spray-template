@@ -3,6 +3,7 @@ import org.json4s.{DefaultFormats, Formats}
 import org.json4s.JsonAST.JObject
 import sample.Transfer
 import sample.Transfer.TransferRequest
+import spray.httpx.encoding.Gzip
 import spray.httpx.Json4sSupport
 import spray.routing._
 import spray.http._
@@ -52,6 +53,19 @@ trait MyService extends HttpService with Json4sSupport {
             detach() {
               complete {
                 Transfer.transfer(transferReq)
+              }
+            }
+          }
+        }
+      } ~
+      path("account" / "transaction.gz") {
+        post {
+          entity(as[TransferRequest]) { transferReq =>
+            detach() {
+              compressResponse(Gzip) {
+                complete {
+                  Transfer.transfer(transferReq)
+                }
               }
             }
           }
