@@ -5,7 +5,7 @@ spray 工程模板，参考https://github.com/spray/spray-template/tree/on_spray
 配置了单元测试scaltest,日志引擎logback,eclipse项目生成等插件
 
 * 进入sbt交互终端运行run,用advance rest client向
-http://127.0.0.1:8080/account/transactiona 发送一个post请求，内容为{"id":1,"from":{"owner":"yy","balance":100.0},"to":{"owner":"xx","balance":100.0},"amount":50.0} 即可从服务端接收到相应的响应消息。
+http://127.0.0.1:8080/account/transaction 发送一个post请求，内容为{"id":1,"from":{"owner":"yy","balance":100.0},"to":{"owner":"xx","balance":100.0},"amount":50.0} 即可从服务端接收到相应的响应消息。
 * 运行sbt test会编译并运行自动化单元测试
 * 运行sbt it:test运行src/it/scala下的集成测试
 * 运行sbt it:test运行src/ft/scala下的功能测试
