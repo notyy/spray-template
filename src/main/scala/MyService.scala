@@ -2,7 +2,7 @@ import akka.actor.Actor
 import org.json4s.{DefaultFormats, Formats}
 import org.json4s.JsonAST.JObject
 import sample.Transfer
-import sample.Transfer.TransferRequest
+import sample.Transfer.{TransferFailed, TransferSuccess, TransferRequest}
 import spray.httpx.encoding.Gzip
 import spray.httpx.Json4sSupport
 import spray.routing._
@@ -52,7 +52,10 @@ trait MyService extends HttpService with Json4sSupport {
           entity(as[TransferRequest]) { transferReq =>
             detach() {
               complete {
-                Transfer.transfer(transferReq)
+                Transfer.transfer(transferReq) match {
+                  case rs: TransferSuccess => rs
+                  case rs: TransferFailed => StatusCodes.BadRequest -> rs
+                }
               }
             }
           }
