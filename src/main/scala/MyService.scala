@@ -1,13 +1,13 @@
 import akka.actor.Actor
-import org.json4s.{DefaultFormats, Formats}
-import org.json4s.JsonAST.JObject
-import sample.Transfer
-import sample.Transfer.{TransferFailed, TransferSuccess, TransferRequest}
-import spray.httpx.encoding.Gzip
-import spray.httpx.Json4sSupport
-import spray.routing._
+import org.json4s.Formats
+import sample.Transfer.{TransferFailed, TransferRequest, TransferSuccess}
+import sample.util.JSONUtil
+import sample.{Person, Transfer}
+import spray.http.MediaTypes._
 import spray.http._
-import MediaTypes._
+import spray.httpx.Json4sSupport
+import spray.httpx.encoding.Gzip
+import spray.routing._
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
@@ -26,7 +26,7 @@ class MyServiceActor extends Actor with MyService {
 
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with Json4sSupport {
-  implicit def json4sFormats: Formats = DefaultFormats
+  implicit def json4sFormats: Formats = JSONUtil.formats
 
   val myRoute =
     path("") {
@@ -72,6 +72,18 @@ trait MyService extends HttpService with Json4sSupport {
               }
             }
           }
+        }
+      } ~
+      path("person") {
+        get {
+            detach() {
+                complete {
+                  val p = new Person
+                  p.name = "notyy"
+                  p.age = 37
+                  p
+                }
+            }
         }
       }
 }

@@ -1,5 +1,5 @@
 import org.scalatest.{ShouldMatchers, FunSpec}
-import sample.Account
+import sample.{Person, Account}
 import sample.Transfer.{TransferFailed, TransferSuccess, TransferRequest}
 import spray.testkit.ScalatestRouteTest
 import scala.concurrent.duration._
@@ -30,24 +30,14 @@ class MyServiceTest extends FunSpec with ScalatestRouteTest with MyService with 
           rs.message should be ("not enough balance")
         }
       }
+      it("should get json from normal class instead of case class"){
+        Get("/person") ~> myRoute ~> check {
+          println(body.asString)
+          val rs = responseAs[Person]
+          rs.name shouldBe "notyy"
+          rs.age shouldBe 37
+        }
+      }
     }
-    //    it("should return a greeting for GET requests to the root path") {
-    //      Get() ~> myRoute ~> check {
-    //        responseAs[String].contains("Say hello") should be (true)
-    //      }
-    //    }
-    //
-    //    it("should leave GET requests to other paths unhandled") {
-    //      Get("/kermit") ~> myRoute ~> check {
-    //        handled should be (false)
-    //      }
-    //    }
-    //
-    //    it("should return a MethodNotAllowed error for PUT requests to the root path") {
-    //      Put() ~> sealRoute(myRoute) ~> check {
-    //        status should be (MethodNotAllowed)
-    //        responseAs[String] should be("HTTP method not allowed, supported methods: GET")
-    //      }
-    //    }
   }
 }
