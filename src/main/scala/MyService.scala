@@ -27,6 +27,7 @@ class MyServiceActor extends Actor with MyService {
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with Json4sSupport {
   implicit def json4sFormats: Formats = JSONUtil.formats
+  val getDetachComplete = get & detach() & complete
 
   val myRoute =
     path("") {
@@ -75,15 +76,26 @@ trait MyService extends HttpService with Json4sSupport {
         }
       } ~
       path("person") {
+        getDetachComplete {
+          println("receiving request /person")
+          val p = new Person
+          p.name = "notyy"
+          p.age = 37
+          p
+        }
+      } ~
+      path("person1") {
         get {
-            detach() {
-                complete {
-                  val p = new Person
-                  p.name = "notyy"
-                  p.age = 37
-                  p
-                }
+          detach() {
+            complete {
+              println("receiving request /person1")
+              val p = new Person
+              p.name = "notyy1"
+              p.age = 37
+              p
             }
+          }
         }
       }
+
 }
