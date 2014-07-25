@@ -1,6 +1,7 @@
 import de.johoop.jacoco4sbt._
 import JacocoPlugin._
 import sbt._
+import spray.revolver.RevolverPlugin.Revolver
 
 // set the name of the project
 name := "sprayTemplate"
@@ -30,7 +31,8 @@ libraryDependencies ++= {
     "io.spray" % "spray-testkit" % sprayV % "test",
     "com.typesafe.akka" %% "akka-actor" % akkaV,
     "com.typesafe.akka" %% "akka-testkit" % akkaV % "test",
-    "org.json4s" %% "json4s-native" % "3.2.4"
+    "org.json4s" %% "json4s-native" % "3.2.4",
+    "org.mockito" % "mockito-all" % "1.9.5" % "test"
   )
 }
 
