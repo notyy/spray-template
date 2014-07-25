@@ -3,6 +3,7 @@ import JacocoPlugin._
 import sbt._
 import spray.revolver.RevolverPlugin.Revolver
 
+
 // set the name of the project
 name := "sprayTemplate"
 
