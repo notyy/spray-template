@@ -18,6 +18,7 @@ class ObjectJsonViewer extends FunSpec with ShouldMatchers {
       val p = new Person
       p.name = "notyy"
       p.age = 37
+      p.p37 = 777
       println(write(p))
     }
   }
