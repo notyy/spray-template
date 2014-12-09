@@ -96,6 +96,15 @@ trait MyService extends HttpService with Json4sSupport {
             }
           }
         }
+      } ~
+      path("javascript") {
+        get {
+//          respondWithMediaType(`text/plain`) {
+            complete {
+              HttpResponse(StatusCodes.OK, HttpEntity("xxxx"))
+            }
+//          }
+        }
       }
 
 }
