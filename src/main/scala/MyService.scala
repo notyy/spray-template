@@ -11,7 +11,7 @@ import spray.routing._
 
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
-class MyServiceActor extends Actor with MyService {
+class MyServiceActor extends Actor with MyService with ResourceService {
 
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
@@ -20,13 +20,14 @@ class MyServiceActor extends Actor with MyService {
   // this actor only runs our route, but you could add
   // other things here, like request stream processing
   // or timeout handling
-  def receive = runRoute(myRoute)
+  def receive = runRoute(myRoute ~ resourceRoute)
 }
 
 
 // this trait defines our service behavior independently from the service actor
 trait MyService extends HttpService with Json4sSupport {
   implicit def json4sFormats: Formats = JSONUtil.formats
+
   val getDetachComplete = get & detach() & complete
 
   val myRoute =
@@ -99,12 +100,47 @@ trait MyService extends HttpService with Json4sSupport {
       } ~
       path("javascript") {
         get {
-//          respondWithMediaType(`text/plain`) {
+          //          respondWithMediaType(`text/plain`) {
+          complete {
+            HttpResponse(StatusCodes.OK, HttpEntity("xxxx"))
+          }
+          //          }
+        }
+      }
+}
+
+trait ResourceService extends HttpService {
+  def resourceRoute =
+    path("file") {
+      get {
+        respondWithMediaType(`text/csv`) {
+          complete("hello,world")
+        }
+      }
+    } ~
+      path("stream") {
+        get {
+          respondWithMediaType(`text/html`) {
             complete {
-              HttpResponse(StatusCodes.OK, HttpEntity("xxxx"))
+              simpleStringStream
             }
-//          }
+          }
         }
       }
 
+  //this streaming example is copied from offical spray example:
+  //https://github.com/spray/spray/blob/release/1.2/examples/spray-routing/on-spray-can/src/main/scala/spray/examples/DemoService.scala
+  // we prepend 2048 "empty" bytes to push the browser to immediately start displaying the incoming chunks
+  lazy val streamStart = " " * 2048 + "<html><body><h2>A streaming response</h2><p>(for 15 seconds)<ul>"
+  lazy val streamEnd = "</ul><p>Finished.</p></body></html>"
+
+  def simpleStringStream: Stream[String] = {
+    val secondStream = Stream.continually {
+      // CAUTION: we block here to delay the stream generation for you to be able to follow it in your browser,
+      // this is only done for the purpose of this demo, blocking in actor code should otherwise be avoided
+      Thread.sleep(500)
+      "<li>" + DateTime.now.toIsoDateTimeString + "</li>"
+    }
+    streamStart #:: secondStream.take(15) #::: streamEnd #:: Stream.empty
+  }
 }
