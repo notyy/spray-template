@@ -126,6 +126,15 @@ trait ResourceService extends HttpService {
             }
           }
         }
+      } ~
+      clientIP { ip =>
+        path("ip") {
+          get {
+            complete {
+              s"client ip is $ip"
+            }
+          }
+        }
       }
 
   //this streaming example is copied from offical spray example:
@@ -144,3 +153,5 @@ trait ResourceService extends HttpService {
     streamStart #:: secondStream.take(15) #::: streamEnd #:: Stream.empty
   }
 }
+
+
