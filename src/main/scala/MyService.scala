@@ -9,6 +9,8 @@ import spray.httpx.Json4sSupport
 import spray.httpx.encoding.Gzip
 import spray.routing._
 
+import scala.io.Source
+
 // we don't implement our route structure directly in the service actor because
 // we want to be able to test it independently, without having to spin up an actor
 class MyServiceActor extends Actor with MyService with ResourceService {
@@ -114,7 +116,9 @@ trait ResourceService extends HttpService {
     path("file") {
       get {
         respondWithMediaType(`text/csv`) {
-          complete("hello,world")
+          respondWithHeader(HttpHeaders.`Content-Disposition`("attachment", Map("filename" -> "myFile.csv"))) {
+            complete("hello,world")
+          }
         }
       }
     } ~
@@ -124,6 +128,13 @@ trait ResourceService extends HttpService {
             complete {
               simpleStringStream
             }
+          }
+        }
+      } ~
+      path("stringStream") {
+        get {
+          complete{
+            stringStream
           }
         }
       } ~
@@ -144,6 +155,7 @@ trait ResourceService extends HttpService {
   lazy val streamEnd = "</ul><p>Finished.</p></body></html>"
 
   def simpleStringStream: Stream[String] = {
+    //be careful!! continually is infinite
     val secondStream = Stream.continually {
       // CAUTION: we block here to delay the stream generation for you to be able to follow it in your browser,
       // this is only done for the purpose of this demo, blocking in actor code should otherwise be avoided
@@ -151,6 +163,22 @@ trait ResourceService extends HttpService {
       "<li>" + DateTime.now.toIsoDateTimeString + "</li>"
     }
     streamStart #:: secondStream.take(15) #::: streamEnd #:: Stream.empty
+  }
+
+  def iterToStream(iter: Iterator[String]): Stream[String] = {
+    if(iter.hasNext){
+      val lines: String = iter.take(2).mkString("\n") + "\n"
+      Thread.sleep(500)
+      Stream.cons(lines,  iterToStream(iter))
+    }else{
+      Stream.empty
+    }
+  }
+
+  def stringStream: Stream[String] = {
+    val iter = Source.fromFile("src/test/resources/log4j.properties").getLines()
+//    iterToStream(iter)
+    iter.grouped(10).map(_.mkString("\n")+"\n").toStream
   }
 }
 
