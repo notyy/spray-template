@@ -3,10 +3,12 @@ import org.json4s.Formats
 import sample.Transfer.{TransferFailed, TransferRequest, TransferSuccess}
 import sample.util.JSONUtil
 import sample.{Person, Transfer}
+import shapeless.HNil
 import spray.http.MediaTypes._
 import spray.http._
 import spray.httpx.Json4sSupport
 import spray.httpx.encoding.Gzip
+import spray.httpx.unmarshalling.FromRequestUnmarshaller
 import spray.routing._
 
 import scala.io.Source
@@ -31,6 +33,23 @@ trait MyService extends HttpService with Json4sSupport {
   implicit def json4sFormats: Formats = JSONUtil.formats
 
   val getDetachComplete = get & detach() & complete
+  def getPath(path1: String) = path(path1) & get & detach() & complete
+//  def postPath[T](path1: String) = path(path1) & post & entity(as[T]) & detach() & complete
+
+  def  postPath[T](path1:PathMatcher[HNil])(implicit  um:FromRequestUnmarshaller[T]) =
+    path(path1) & post  & detach(())  & entity(as[T])
+
+//  def postPath[T](path1: PathMatcher[HNil])(act: T => ToResponseMarshallable) = path(path1) {
+//    post {
+//      entity(as[T]) { transferReq =>
+//        detach() {
+//          complete {
+//            act(transferReq)
+//          }
+//        }
+//      }
+//    }
+//  }
 
   val myRoute =
     path("") {
@@ -62,6 +81,15 @@ trait MyService extends HttpService with Json4sSupport {
                 }
               }
             }
+          }
+        }
+      } ~
+      postPath[TransferRequest]("account" / "ptrans").apply{ transferReq =>
+        complete {
+          println("postPath to me")
+          Transfer.transfer(transferReq) match {
+            case rs: TransferSuccess => rs
+            case rs: TransferFailed => StatusCodes.BadRequest -> rs
           }
         }
       } ~
@@ -99,7 +127,13 @@ trait MyService extends HttpService with Json4sSupport {
             }
           }
         }
-      } ~
+      } ~ getPath("person2") {
+      println("receiving request /person2")
+      val p = new Person
+      p.name = "notyy"
+      p.age = 73
+      p
+    } ~
       path("javascript") {
         get {
           //          respondWithMediaType(`text/plain`) {
