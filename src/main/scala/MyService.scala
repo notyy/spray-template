@@ -34,17 +34,17 @@ class MyServiceActor extends Actor with MyService with ResourceService {
 trait MyService extends HttpService with Json4sSupport{
   implicit def json4sFormats: Formats = JSONUtil.formats
 
+  def logIpAndReportError(statusCode: StatusCode, msgFunc: RemoteAddress => String): Route = clientIP { ip =>
+    complete(statusCode, msgFunc(ip))
+  }
+
   implicit def myExceptionHandler: ExceptionHandler =
     ExceptionHandler {
       case e: IllegalStateException => {
-        clientIP { ip =>
-          //          log.warning("Request to {} could not be handled normally", uri)
-          complete(StatusCodes.InternalServerError, s"Bad numbers, bad result!!! clientIp: $ip")
-        }
+        logIpAndReportError(StatusCodes.InternalServerError,ip => s"bad request $ip")
       }
       case e: TimeoutException => {
         clientIP { ip =>
-          //          log.warning("Request to {} could not be handled normally", uri)
           complete(StatusCodes.NetworkReadTimeout, s"can't get response in time!!! clientIp: $ip")
         }
       }
