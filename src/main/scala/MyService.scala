@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeoutException
+
 import akka.actor.Actor
 import org.json4s.Formats
 import sample.Transfer.{TransferFailed, TransferRequest, TransferSuccess}
@@ -29,8 +31,24 @@ class MyServiceActor extends Actor with MyService with ResourceService {
 
 
 // this trait defines our service behavior independently from the service actor
-trait MyService extends HttpService with Json4sSupport {
+trait MyService extends HttpService with Json4sSupport{
   implicit def json4sFormats: Formats = JSONUtil.formats
+
+  implicit def myExceptionHandler: ExceptionHandler =
+    ExceptionHandler {
+      case e: IllegalStateException => {
+        clientIP { ip =>
+          //          log.warning("Request to {} could not be handled normally", uri)
+          complete(StatusCodes.InternalServerError, s"Bad numbers, bad result!!! clientIp: $ip")
+        }
+      }
+      case e: TimeoutException => {
+        clientIP { ip =>
+          //          log.warning("Request to {} could not be handled normally", uri)
+          complete(StatusCodes.NetworkReadTimeout, s"can't get response in time!!! clientIp: $ip")
+        }
+      }
+    }
 
   val getDetachComplete = get & detach() & complete
   def getPath(path1: String) = path(path1) & get & detach() & complete
@@ -79,6 +97,8 @@ trait MyService extends HttpService with Json4sSupport {
                   case rs: TransferSuccess => rs
                   case rs: TransferFailed => StatusCodes.BadRequest -> rs
                 }
+//                throw new IllegalStateException("error")
+//                throw new java.util.concurrent.TimeoutException("error")
               }
             }
           }
